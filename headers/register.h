@@ -22,10 +22,10 @@
 
 #define numRegisters 4
 
-extern uint32_t Registers[numGenRegisters+numDataRegisters]; //array of registers
+extern uint32_t Registers[numRegisters]; //array of registers
 extern int currRegister;  //current register index
 
-void initRegisters(); //initialize registers to
+void initRegisters(); //initialize registers to starting values
 void clearData(); //Clear non-volatile FRAM memory
 void executeDirectCommand(uint8_t command); //execute a direct command
 void executeRegisterCommand(uint8_t command, uint8_t numBytesToRead); //execute a register command
