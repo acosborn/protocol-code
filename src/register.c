@@ -18,10 +18,10 @@ uint32_t Registers[numRegisters];   //Array of Registers
  *****************************************************************************/
 void initRegisters()
 {
-  Registers[IMPdir] = 0x0000;
-  Registers[IMPrcr] = 0x0000;
-  Registers[IMPrrr] = 0x0000;
-  Registers[IMPdcar] = 0x0000;
+  Registers[IMPdir] = 0x0000;   //Device Instruction Register
+  Registers[IMPrcr] = 0x0000;   //Reads Completed Register
+  Registers[IMPrrr] = 0x0000;   //Reads Requested Register
+  Registers[IMPdcar] = 0x0000;  //Data Chunk Address Register
 }
 
 
@@ -75,7 +75,7 @@ void executeDirectCommand(uint8_t command)
       break;
 
   case IMPTXCHUNK:  //Transmit chunk of data located at IMPdcar address of FRAM
-      //spiTxChunk(Registers[Impdcar]);
+      //retrieve chunk of data and transmit it to external device
       break;
 
   case IMPCLEARDATA:    //Clears the FRAM data
@@ -99,14 +99,7 @@ void executeRegisterCommand(uint8_t command, uint8_t numBytesToRead)
   //check if read or write command
   if(command & readModeBit)
   {
-    //clear FIFO data Registers
-
-    //Send continuous address command to NFC chip.
-      //starting with telling NFC_TXLB1R (0x1D) and NFC_TXLB2R (0x1E) how many
-          //bytes it should expect
-      //continue writing data to NFC_FIFO (0x1F)
-
-    //Begin Transmission
+    //send currRegisters contents back to external device
   }
 
   else  //write mode
@@ -115,31 +108,28 @@ void executeRegisterCommand(uint8_t command, uint8_t numBytesToRead)
     //and at least 1 data byte
     if( (command & bitwiseModeBit) && (numBytesToRead > 4) )
     {
-        //pull NFC SS low
-
         //read in the 4 mask bytes, LSB first
         for(i = 0; i < 4; i++)
         {
-            //mask |= (spiReadByte<<(i*8));
+            //mask |= spiReadDataByte();
         }
 
+        //read in data bytes and change the bits where mask = 1
         for(i = 0; i < numBytes - 4; i++)
         {
             //data = spiReadByte();
-            Registers[currRegister] |= ( mask & (data<<(i*8)) );
-            Registers[currRegister] &= ~( mask & (data<<(i*8)) );
+            Registers[currRegister] |= ( mask & (data<<(i*8)) );    //set the proper 1 bits
+            Registers[currRegister] &= ~( mask & ~(data<<(i*8)) );  //set the proper 0 bits
         }
-        //pull NFC SS high
     }
     else  //receive entire register
     {
-        //pull NFC SS LOW
+        //read data register
 
         for(i = 0; i < numBytes; i++)
         {
-            //data |= (spiReadByte() << i*8)
+            //data |= (spiReadDataByte() << i*8)
         }
-        //pull NFC SS HIGH
         Registers[currRegister] = data;
     }
   }

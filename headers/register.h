@@ -24,10 +24,10 @@
  * 0x02: Reads Requested Register
  * 0x03: Data Chunk Address Register
                                                                              */
-#define IMPdir 0x00
-#define IMPrcr 0x01
-#define IMPrrr 0x02
-#define IMPdcar 0x03
+#define IMPdir 0x00 //Device Instruction Register
+#define IMPrcr 0x01 //Reads Completed Register
+#define IMPrrr 0x02 //Reads Requested Register
+#define IMPdcar 0x03//Data Chunk Address Register
 
 #define numRegisters 4
 
